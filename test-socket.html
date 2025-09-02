@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket Test</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Socket Connection Test</h1>
+    <div id="status">Connecting...</div>
+    <div id="data"></div>
+    
+    <script>
+        const socket = io('http://localhost:3001');
+        
+        socket.on('connect', () => {
+            document.getElementById('status').innerText = '✅ Connected!';
+            console.log('Connected:', socket.id);
+        });
+        
+        socket.on('initial:data', (data) => {
+            console.log('Initial data received:', data);
+            document.getElementById('data').innerHTML = `
+                <h2>Received Data:</h2>
+                <p>Devices: ${data.devices?.length || 0}</p>
+                <p>Positions: ${data.positions?.length || 0}</p>
+                <p>Activities: ${data.activities?.length || 0}</p>
+                <p>Alerts: ${data.alerts?.length || 0}</p>
+            `;
+        });
+        
+        socket.on('positions:update', (positions) => {
+            console.log('Positions update:', positions?.length);
+        });
+        
+        socket.on('fleet:stats', (stats) => {
+            console.log('Fleet stats:', stats);
+        });
+        
+        socket.on('disconnect', () => {
+            document.getElementById('status').innerText = '❌ Disconnected';
+        });
+    </script>
+</body>
+</html>
